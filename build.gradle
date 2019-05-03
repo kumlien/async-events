@@ -1,0 +1,32 @@
+/*
+ * root project
+ */
+apply plugin: 'java'
+apply plugin: 'wrapper'
+apply plugin: 'war'
+
+version = '0.0.1'
+
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
+
+buildscript {
+    repositories {
+        maven {url 'https://repository.jboss.org/nexus/content/groups/public'}
+        jcenter()
+        mavenCentral()
+    }
+}
+
+dependencies {
+    providedCompile("javax:javaee-api:8.0")
+}
+
+
+
+allprojects {
+
+    repositories {
+        mavenCentral()
+    }
+}

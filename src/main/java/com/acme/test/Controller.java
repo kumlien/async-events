@@ -6,15 +6,12 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.NotificationOptions;
 import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Response;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 
 
 @ApplicationScoped
@@ -27,26 +24,36 @@ public class Controller extends Application {
     @Inject
     Event<String> event;
 
-
     @PostConstruct
     public void init() {
-        ExecutorService executor = Executors.newFixedThreadPool(5);
-        no = NotificationOptions.builder()
-                .set("weld.async.notification.mode", "PARALLEL")
-                //.setExecutor(executor)
-                .build();
     }
 
     @GET
     @Path("send")
     @PermitAll
-    public Response sendSomething() {
-        System.out.println("Entering send");
-        CompletionStage<String> cs = this.event.fireAsync("event", no).whenComplete((s, t) -> {
-            if(t != null) {
-                System.out.println("oops: " + t);
+    public Response sendSomething(@QueryParam("useDefault") @DefaultValue("false") boolean useDefault) {
+        System.out.println("Will fire an event. Using default executor: " + useDefault);
+
+
+        if (useDefault) {
+            no = NotificationOptions.builder()
+                    .set("weld.async.notification.mode", "PARALLEL")
+                    .build();
+        } else {
+            ExecutorService thisOneWorks = Executors.newFixedThreadPool(5);
+            no = NotificationOptions.builder()
+                    .set("weld.async.notification.mode", "PARALLEL")
+                    .setExecutor(thisOneWorks)
+                    .build();
+        }
+
+
+
+        CompletionStage<String> cs = this.event.fireAsync("this is an event", no).whenComplete((msg, t) -> {
+            if (t != null) {
+                System.out.println("Stage failed with: " + t);
             } else {
-                System.out.println("Stage completed with " + s);
+                System.out.println("Stage completed ok!!!");
             }
         });
         System.out.println("We have a cs: " + cs);

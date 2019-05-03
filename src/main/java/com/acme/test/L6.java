@@ -5,7 +5,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.ObservesAsync;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
-import java.util.Random;
 
 @ApplicationScoped
 public class L6 {
@@ -19,11 +18,7 @@ public class L6 {
 
     public void listen(@ObservesAsync String msg) {
         System.out.println("L6 got a message: " + msg);
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
         System.out.println("And L6 returned");
     }
 }
